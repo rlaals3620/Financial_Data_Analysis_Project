@@ -309,7 +309,7 @@ class ModernPortfolio:
         rc('font', family='NanumGothic')
         rcParams['axes.unicode_minus'] = False
         
-        plt.figure()
+        plt.figure(figsize=(12, 8))
         plt.title(self.names)
 
         plt.scatter(portfolios.risk_, portfolios.return_, c=portfolios.Sharpe,
