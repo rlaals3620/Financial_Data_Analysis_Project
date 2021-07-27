@@ -23,7 +23,7 @@ class x_axis_setting:
             for index, date in enumerate(dates):
                 if index % n == (len(dates)-1) % n:
                     xticks.append(index)
-                    if n <= 10:
+                    if n <= 25:
                         xlabels.append(date.strftime('%Y-%m-%d'))
                     elif n <= 200:
                         xlabels.append(date.strftime('%Y-%m'))
@@ -54,14 +54,14 @@ def price_bar(ax, price_df, up=None, down=None, show_labels=False):
     for index, daily in enumerate(price_df.itertuples()):
         width = 0.8
         line_width = 0.12
-        if daily.close - daily.open != 0:
+        if daily.close - daily.open != 0 and daily.volume != 0:
             height = abs(daily.close - daily.open)
         # Open and close price should appear on chart even if they are the same
         else:
             height = daily.close / 1000
-        line_height = (daily.high - daily.low)
+        line_height = daily.high - daily.low
 
-        if daily.close >= daily.open:
+        if daily.close >= daily.open and daily.volume != 0:
             ax.add_patch(patches.Rectangle(
                 (index - 0.5 *  width, daily.open),
                 width, 
@@ -76,9 +76,17 @@ def price_bar(ax, price_df, up=None, down=None, show_labels=False):
                 facecolor=up,
                 fill=True
             ))
+        elif daily.volume == 0:
+            ax.add_patch(patches.Rectangle(
+                (index - 0.5 *  width, daily.close - 0.5 * height),
+                width, 
+                height,
+                facecolor=up,
+                fill=True
+            ))
         else:
             ax.add_patch(patches.Rectangle(
-                (index - 0.5 * width, daily.close),
+                (index - 0.5 * width, daily.close - 0.5 * height),
                 width,
                 height,
                 facecolor=down,
@@ -92,8 +100,8 @@ def price_bar(ax, price_df, up=None, down=None, show_labels=False):
                 fill=True
             ))
 
-    min_price = min(price_df.low)
-    max_price = max(price_df.high)
+    min_price = min(price_df.low.iloc[price_df.low.to_numpy().nonzero()[0]])
+    max_price = max(price_df.high.iloc[price_df.high.to_numpy().nonzero()[0]])
     gap = max_price - min_price
     plt.axis([None, None, min_price - gap * 0.1, max_price + gap * 0.1])
 
