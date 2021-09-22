@@ -1,4 +1,5 @@
-# Finance-Project
+# stock-analysis
+
 ### PriceDB
 - Update stock price DB from the latest update date to now
 - Read stock price data of specified company and period
